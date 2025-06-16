@@ -24,7 +24,17 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE pRevInst, LPSTR lpCmdLine, INT
 	//wClass.hIcon = (HICON)LoadImage(hInstance, "atom.ico", IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE); 
 	//wClass.hIcon = (HICON)LoadImage(hInstance, "bitcoin.ico", IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE); 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadimagea
-	wClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+	//wClass.hCursor = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_CURSOR1));
+	wClass.hCursor = (HCURSOR)LoadImage
+	(
+		hInstance, 
+		"starcraft-small-version\\SC2-cursor-busy-small.ani",
+		IMAGE_CURSOR,
+		32,
+		32,
+		LR_LOADFROMFILE
+
+	);
 	wClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
 	
 
