@@ -1,4 +1,5 @@
 ﻿#include<Windows.h>
+#include<stdio.h>
 
 CONST CHAR g_sz_CLASS_NAME[] = "My First Window";
 
@@ -36,14 +37,22 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE pRevInst, LPSTR lpCmdLine, INT
 
 	//2) Создание окна:
 	
+	INT screen_width = GetSystemMetrics(SM_CXSCREEN);
+	INT screen_height = GetSystemMetrics(SM_CYSCREEN);
+
+	INT window_width = screen_width * .75;
+	INT window_height = screen_height * 3 / 4;
+	INT window_start_x = screen_width / 8;
+	INT window_start_y = screen_height / 8;
+
 	HWND hwnd = CreateWindowEx
 	(
 		NULL,
 		g_sz_CLASS_NAME, //Class name
 		g_sz_CLASS_NAME, // Win name
 		WS_OVERLAPPEDWINDOW, //такой стиль задается для всех  главных окон. Это окно будет родительским для других окон приложения.
-		CW_USEDEFAULT, CW_USEDEFAULT,
-		CW_USEDEFAULT, CW_USEDEFAULT,
+		window_start_x, window_start_y, //CW_USEDEFAULT, CW_USEDEFAULT,
+		window_width, window_height, //CW_USEDEFAULT, CW_USEDEFAULT,
 		NULL, //Perent win
 		NULL, //Стркоа меню для главного окна или же ID ресурса для дочернего окна
 		hInstance, //это экземпляр exe файла нашей программы
@@ -77,6 +86,39 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 		break;
+	case WM_MOVE:
+	/* {
+		RECT window_rect;
+		GetWindowRect(hwnd, &window_rect);
+		INT window_width = window_rect.right - window_rect.left;
+		INT Window_heigth = window_rect.bottom - window_rect.top;
+		CONST INT SIZE = 256;
+		CHAR sz_title[SIZE] = {};
+		sprintf
+		(sz_title, "%s - Position:%ix%i", g_sz_CLASS_NAME, window_rect.left, window_rect.top, window_width, Window_heigth);
+		SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)sz_title);
+	}
+	break;*/
+	case WM_SIZE:
+	{
+		RECT window_rect; //Rectangle - Прямоугольник
+		GetWindowRect(hwnd, &window_rect);
+		INT window_width = window_rect.right - window_rect.left;
+		INT Window_heigth = window_rect.bottom - window_rect.top;
+		CONST INT SIZE = 256;
+		CHAR sz_title[SIZE] = {};
+		sprintf
+		(
+			sz_title, 
+			"%s - Position:%ix%i",
+			g_sz_CLASS_NAME,
+			window_rect.left, window_rect.top, 
+			window_width, Window_heigth
+		);
+		SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)sz_title);
+	}
+	break;
+
 	case WM_COMMAND:
 		break;
 	case WM_DESTROY:
