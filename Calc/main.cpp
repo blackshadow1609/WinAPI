@@ -27,6 +27,8 @@ CONST INT g_i_DISPLAY_WIDTH = g_i_BUTTON_SIZE * 5 + g_i_INTERVAL * 4;
 CONST INT g_i_BUTTON_START_X = g_i_START_X;
 CONST INT g_i_BUTTON_START_Y = g_i_START_Y + g_i_DISPLAY_HEIGHT + g_i_INTERVAL;
 
+CONST INT g_SIZE = 256;
+
 INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
@@ -183,6 +185,19 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 		break;
 	case WM_COMMAND:
+	{
+		CHAR szDisplay[g_SIZE] = {};
+		CHAR szDigit[2] = {};
+		HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+		if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9)
+		{
+			szDigit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
+			SendMessage(hEditDisplay, WM_GETTEXT, g_SIZE, (LPARAM)szDisplay);
+			if (szDisplay[0] == '0' && szDisplay[1] != '.')szDisplay[0] = 0;
+			strcat(szDisplay, szDigit);
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)szDisplay);
+		}
+	}
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
