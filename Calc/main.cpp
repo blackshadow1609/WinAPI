@@ -198,7 +198,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		HICON hIcon = (HICON)LoadImage(GetModuleHandle(NULL), "BMP\\0.bmp", IMAGE_BITMAP, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
 
-		SetSkin(hwnd, "square_blue");
+		SetSkin(hwnd, "Metal_mistral");
 	}
 	break;
 	case WM_COMMAND:
