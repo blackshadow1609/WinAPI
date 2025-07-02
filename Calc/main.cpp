@@ -201,7 +201,8 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		//SetSkin(hwnd, "Metal_mistral");
 		//SetSkinFromDLL(hwnd, "square_blue");
-		SetSkinFromDLL(hwnd, "metal_mistral");
+		//SetSkinFromDLL(hwnd, "metal_mistral");
+		SetSkinFromDLL(hwnd, "red_button");
 	}
 	break;
 	case WM_COMMAND:
