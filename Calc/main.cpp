@@ -31,6 +31,7 @@ CONST INT g_SIZE = 256;
 
 INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 VOID SetSkin(HWND hwnd, CONST CHAR sz_skin[]);
+VOID SetSkinFromDLL(HWND hwnd, CONST CHAR sz_skin[]);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 
@@ -198,7 +199,8 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		HICON hIcon = (HICON)LoadImage(GetModuleHandle(NULL), "BMP\\0.bmp", IMAGE_BITMAP, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
 
-		SetSkin(hwnd, "Metal_mistral");
+		//SetSkin(hwnd, "Metal_mistral");
+		SetSkinFromDLL(hwnd, "Metal_mistral");
 	}
 	break;
 	case WM_COMMAND:
@@ -438,4 +440,24 @@ VOID SetSkin(HWND hwnd, CONST CHAR sz_skin[])
 		SendMessage(GetDlgItem(hwnd, i), BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpIcon);
 	}
 	std::cout << delimiter << std::endl;
+}
+VOID SetSkinFromDLL(HWND hwnd, CONST CHAR sz_skin[])
+{
+	HMODULE hButtonsModule = LoadLibrary("Buttons.dll");
+	//HINSTANCE hButtons = GetModuleHandle("Buttons.dll");
+	for (int i = IDC_BUTTON_0; i <= IDC_BUTTON_EQUAL; i++)
+	{
+		HBITMAP bmpButton = (HBITMAP)LoadImage
+		(
+			hButtonsModule,
+			MAKEINTRESOURCE(i),
+			IMAGE_BITMAP,
+			i == IDC_BUTTON_0		? g_i_BUTTON_SIZE_DOUBLE: g_i_BUTTON_SIZE,
+			i == IDC_BUTTON_EQUAL	? g_i_BUTTON_SIZE_DOUBLE: g_i_BUTTON_SIZE,
+			LR_SHARED
+		);
+		PrintLastError(GetLastError());
+		SendMessage(GetDlgItem(hwnd, i), BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton);
+	}
+	FreeLibrary(hButtonsModule);
 }
