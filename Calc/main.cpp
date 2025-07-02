@@ -200,7 +200,8 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HICON hIcon = (HICON)LoadImage(GetModuleHandle(NULL), "BMP\\0.bmp", IMAGE_BITMAP, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
 
 		//SetSkin(hwnd, "Metal_mistral");
-		SetSkinFromDLL(hwnd, "Metal_mistral");
+		//SetSkinFromDLL(hwnd, "square_blue");
+		SetSkinFromDLL(hwnd, "metal_mistral");
 	}
 	break;
 	case WM_COMMAND:
@@ -443,7 +444,7 @@ VOID SetSkin(HWND hwnd, CONST CHAR sz_skin[])
 }
 VOID SetSkinFromDLL(HWND hwnd, CONST CHAR sz_skin[])
 {
-	HMODULE hButtonsModule = LoadLibrary("Buttons.dll");
+	HMODULE hButtonsModule = LoadLibrary(sz_skin);
 	//HINSTANCE hButtons = GetModuleHandle("Buttons.dll");
 	for (int i = IDC_BUTTON_0; i <= IDC_BUTTON_EQUAL; i++)
 	{
