@@ -3,31 +3,8 @@
 #include<stdio.h>
 #include<iostream>
 #include"resource.h"
+#include"Constants.h"
 
-#define delimiter "\n---------------------------------------------------------------------\n"
-
-CONST CHAR g_sz_CLASS_NAME[] = "MyCalc";
-
-CONST CHAR* g_sz_OPERATIONS[] = { "+", "-", "*", "/" };
-CONST CHAR* g_sz_EDIT[] = { "<-", "C", "=" };
-CONST CHAR* g_sz_BUTTON_FILENAMES[] = {"point", "plus", "minus", "aster", "slash", "bsp", "clr", "equal"};
-
-CONST INT g_i_BUTTON_SIZE = 50;
-CONST INT g_i_INTERVAL = 1;
-CONST INT g_i_BUTTON_SPACE = g_i_BUTTON_SIZE + g_i_INTERVAL;
-
-CONST INT g_i_BUTTON_SIZE_DOUBLE = g_i_BUTTON_SIZE * 2 + g_i_INTERVAL;
-CONST INT g_i_START_X = 10;
-CONST INT g_i_START_Y = 10;
-CONST INT g_i_DISPLAY_HEIGHT = 48;
-CONST INT g_i_DISPLAY_WIDTH = g_i_BUTTON_SIZE * 5 + g_i_INTERVAL * 4;
-CONST INT g_i_BUTTON_START_X = g_i_START_X;
-CONST INT g_i_BUTTON_START_Y = g_i_START_Y + g_i_DISPLAY_HEIGHT + g_i_INTERVAL;
-
-CONST INT g_i_WINDOW_WIDTH = g_i_DISPLAY_WIDTH + 2 * g_i_START_X + 16;
-CONST INT g_i_WINDOW_HEIGHT = (g_i_DISPLAY_HEIGHT + g_i_INTERVAL) + g_i_BUTTON_SPACE * 4 + 2 * g_i_START_Y + 24 + 16;
-
-CONST INT g_SIZE = 256;
 
 INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 VOID SetSkin(HWND hwnd, CONST CHAR sz_skin[]);
@@ -101,6 +78,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	static BOOL input = FALSE;
 	static BOOL input_operation = FALSE;
 
+	static INT index = 0;
 
 	switch (uMsg)
 	{
@@ -199,7 +177,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				NULL
 			);
 		}
-		
+
 		for (int i = 0; i < 3; i++)
 		{
 			CreateWindowEx
@@ -218,12 +196,24 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HICON hIcon = (HICON)LoadImage(GetModuleHandle(NULL), "BMP\\0.bmp", IMAGE_BITMAP, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
 
 		//SetSkin(hwnd, "Metal_mistral");
-		//SetSkinFromDLL(hwnd, "square_blue");
-		SetSkinFromDLL(hwnd, "metal_mistral");
+		SetSkinFromDLL(hwnd, "square_blue");
+		//SetSkinFromDLL(hwnd, "metal_mistral");
 
-		
+
 	}
 	break;
+	case WM_CTLCOLOREDIT:
+	{
+		HDC hdcEdit = (HDC)wParam;
+		SetBkColor(hdcEdit, g_DISPLAY_BACKGROUND[index]);
+		SetTextColor(hdcEdit, g_DISPLAY_FOREGROUND[index]);
+
+		HBRUSH hbrBackground = CreateSolidBrush(g_WINDOW_BACKGROUND[index]);
+		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG)hbrBackground);
+		SendMessage(hwnd, WM_ERASEBKGND, wParam, 0);
+		RedrawWindow(hwnd, NULL, NULL, RDW_ERASE);
+		return (LRESULT)hbrBackground;
+	}
 	case WM_COMMAND:
 	{
 		CHAR szDisplay[g_SIZE] = {};
@@ -286,6 +276,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			sprintf(szDisplay, "%g", a);
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)szDisplay);
 		}
+		if (LOWORD(wParam) == IDC_EDIT_DISPLAY && HIWORD(wParam) == EN_SETFOCUS)SetFocus(hwnd);
 	}
 	break;
 	case WM_KEYDOWN:
@@ -402,9 +393,30 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		switch (item)
 		{
-		case CM_SQUARE_BLUE:	SetSkin(hwnd, "square_blue");	break;
-		case CM_METAL_MISTRAL:	SetSkin(hwnd, "metal_mistral"); break;
+		case CM_EXIT:			SendMessage(hwnd, WM_DESTROY, 0, 0);	break;
+		case CM_SQUARE_BLUE:	SetSkinFromDLL(hwnd, "square_blue");	break;
+		case CM_METAL_MISTRAL:	SetSkinFromDLL(hwnd, "metal_mistral");	break;
 		}
+		DestroyMenu(hMainMenu);
+
+		if (item >= 201 && 210)
+		{
+			index = item - CM_SQUARE_BLUE;
+			//SetSkin(hwnd, g_sz_SKIN[index]);
+
+			HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+			HDC hdcEditDisplay = GetDC(hEditDisplay);
+			SendMessage(hwnd, WM_CTLCOLOREDIT, (WPARAM)hdcEditDisplay, 0);
+			ReleaseDC(hEditDisplay, hdcEditDisplay);
+
+			CHAR sz_buffer[g_SIZE] = {};
+			SendMessage(hwnd, WM_GETTEXT, g_SIZE, (LPARAM)sz_buffer);
+			SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)"");
+			SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)sz_buffer);
+			SetFocus(hEditDisplay);
+			SetSkinFromDLL(hwnd, g_sz_SKIN[index]);
+		}
+
 	}
 	break;
 	case WM_DESTROY:
@@ -489,8 +501,8 @@ VOID SetSkinFromDLL(HWND hwnd, CONST CHAR sz_skin[])
 			hButtonsModule,
 			MAKEINTRESOURCE(i),
 			IMAGE_BITMAP,
-			i == IDC_BUTTON_0		? g_i_BUTTON_SIZE_DOUBLE: g_i_BUTTON_SIZE,
-			i == IDC_BUTTON_EQUAL	? g_i_BUTTON_SIZE_DOUBLE: g_i_BUTTON_SIZE,
+			i == IDC_BUTTON_0 ? g_i_BUTTON_SIZE_DOUBLE : g_i_BUTTON_SIZE,
+			i == IDC_BUTTON_EQUAL ? g_i_BUTTON_SIZE_DOUBLE : g_i_BUTTON_SIZE,
 			LR_SHARED
 		);
 		PrintLastError(GetLastError());
