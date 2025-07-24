@@ -207,7 +207,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HDC hdcEdit = (HDC)wParam;
 		SetBkColor(hdcEdit, g_DISPLAY_BACKGROUND[index]);
 		SetTextColor(hdcEdit, g_DISPLAY_FOREGROUND[index]);
-
+	
 		HBRUSH hbrBackground = CreateSolidBrush(g_WINDOW_BACKGROUND[index]);
 		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG)hbrBackground);
 		SendMessage(hwnd, WM_ERASEBKGND, wParam, 0);
@@ -399,22 +399,23 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		DestroyMenu(hMainMenu);
 
-		if (item >= 201 && 210)
+		if (item >= 201 && item <= 210)
 		{
 			index = item - CM_SQUARE_BLUE;
 			//SetSkin(hwnd, g_sz_SKIN[index]);
+			//SetSkinFromDLL(hwnd, g_sz_SKIN[index]);
 
 			HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
 			HDC hdcEditDisplay = GetDC(hEditDisplay);
-			SendMessage(hwnd, WM_CTLCOLOREDIT, (WPARAM)hdcEditDisplay, 0);
+			//SendMessage(hwnd, WM_CTLCOLOREDIT, (WPARAM)hdcEditDisplay, 0);
 			ReleaseDC(hEditDisplay, hdcEditDisplay);
 
 			CHAR sz_buffer[g_SIZE] = {};
-			SendMessage(hwnd, WM_GETTEXT, g_SIZE, (LPARAM)sz_buffer);
-			SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)"");
-			SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)sz_buffer);
-			SetFocus(hEditDisplay);
-			SetSkinFromDLL(hwnd, g_sz_SKIN[index]);
+			//sprintf(sz_buffer, "%i", item);
+			SendMessage(hEditDisplay, WM_GETTEXT, g_SIZE, (LPARAM)sz_buffer);
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_buffer);
+			//SetFocus(hEditDisplay);
+			
 		}
 
 	}
