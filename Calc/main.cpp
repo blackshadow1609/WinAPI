@@ -111,7 +111,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CLIP_DEFAULT_PRECIS,
 			ANTIALIASED_QUALITY,
 			FF_DONTCARE,
-			"digital-7 mono"
+			"digital-7 mono" 
 		);
 
 		SendMessage(hEditDisplay, WM_SETFONT, (WPARAM)hFont, TRUE);
